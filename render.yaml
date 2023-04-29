@@ -1,0 +1,28 @@
+databases:
+  - name: blog_v1_pgdb
+    databaseName: blog_v1_production
+    user: blog_v1
+    plan: starter
+    region: frankfurt
+
+services:
+  - type: web
+    name: blog_v1_web
+    env: ruby
+    buildCommand: "./bin/render-build.sh"
+    startCommand: "bundle exec puma -C config/puma.rb"
+    repo: https://github.com/DTresadern/blog_v1.git
+    autoDeploy: true
+    region: frankfurt
+    plan: starter
+    branch: master
+    numInstances: 1
+    rootDir: .
+    healthCheckPath: /
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: blog_v1_pgdb
+          property: connectionString
+      - key: RAILS_MASTER_KEY
+        sync: false
